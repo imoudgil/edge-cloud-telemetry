@@ -1,0 +1,19 @@
+[Unit]
+Description=Edge-to-Cloud Linux Telemetry Daemon
+Documentation=file:///usr/local/share/doc/edge-telemetry/README.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/edge-telemetry
+Environment=TELEMETRY_ENDPOINT=http://127.0.0.1:8000/api/v1/telemetry
+Environment=TELEMETRY_INTERVAL_SEC=5
+Restart=on-failure
+RestartSec=3
+
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

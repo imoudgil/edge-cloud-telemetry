@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  edge-agent:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: edge-agent
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build C daemon
+        run: make clean all CC=gcc CFLAGS="-std=c11 -Wall -Wextra -Wpedantic -Werror -O2 -D_POSIX_C_SOURCE=200809L"
+
+      - name: Smoke test binary exists
+        run: test -x ./edge-telemetry
+
+  cloud-receiver:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: cloud-receiver
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Ruff
+        run: ruff check app tests
+
+      - name: Pytest
+        run: pytest -q
+
+      - name: Docker build
+        run: docker build -t telemetry-receiver-ci .

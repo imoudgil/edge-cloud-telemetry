@@ -1,0 +1,7 @@
+edge-agent/edge-telemetry
+edge-agent/src/*.o
+cloud-receiver/.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.pyc
